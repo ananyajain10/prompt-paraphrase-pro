@@ -1,3 +1,5 @@
+<img width="925" height="588" alt="image" src="https://github.com/user-attachments/assets/cdf35980-daa8-42d9-95ab-0b0bb2944d6f" />
+
 ## ⚡ Core Functionality
 
 ### 🔹 Frontend
@@ -17,3 +19,4 @@
 - Email a well-formatted summary to multiple recipients.
 - Get some recommended prompts.
 - Track the progress on the bar.
+
