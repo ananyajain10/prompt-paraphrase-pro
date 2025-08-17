@@ -44,7 +44,6 @@ class FileProcessor {
     if (fileType === "application/pdf") {
       const formData = new FormData();
       formData.append("file", file);
-      const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await fetch(`${import.meta.env.VITE_API_URL}/extract-pdf-text`, {
         method: "POST",
         body: formData,
