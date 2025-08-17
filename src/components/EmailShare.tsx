@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, Mail, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { marked } from "marked";
 
 interface EmailShareProps {
   summary: string;
@@ -16,6 +17,9 @@ export const EmailShare: React.FC<EmailShareProps> = ({ summary }) => {
   const [subject, setSubject] = useState('AI Generated Summary');
   const [message, setMessage] = useState('Please find the AI-generated summary attached below:\n\n');
   const [isSending, setIsSending] = useState(false);
+  
+  const htmlContent = `<pre>${marked.parse(summary)}</pre>`;
+
 
   const addRecipient = () => {
     setRecipients([...recipients, '']);
@@ -32,23 +36,42 @@ export const EmailShare: React.FC<EmailShareProps> = ({ summary }) => {
   };
 
   const handleSend = async () => {
-    const validRecipients = recipients.filter(email => 
-      email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-    );
+  const validRecipients = recipients.filter(email => 
+    email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+  );
 
-    if (validRecipients.length === 0) {
-      toast.error('Please enter at least one valid email address');
-      return;
-    }
+  if (validRecipients.length === 0) {
+    toast.error('Please enter at least one valid email address');
+    return;
+  }
 
-    setIsSending(true);
+  setIsSending(true);
 
-    // Mock email sending
-    setTimeout(() => {
-      setIsSending(false);
-      toast.success(`Summary sent to ${validRecipients.length} recipient(s)!`);
-    }, 2000);
-  };
+  try {
+   
+    const response = await fetch("http://localhost:5000/send-mail", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    to: validRecipients,    
+    subject,
+    text: message,
+    html: htmlContent
+  }),
+    });
+
+    if (!response.ok) throw new Error("Failed to send email");
+
+    toast.success(`Summary sent to ${validRecipients.length} recipient(s)!`);
+  } catch (error) {
+    toast.error("Error sending email");
+    console.error(error);
+  } finally {
+    setIsSending(false);
+  }
+};
+
+
 
   return (
     <div className="space-y-6">
